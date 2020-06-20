@@ -1,5 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import Page from "./Page";
+import NotFound from "./NotFound";
 import { useParams, NavLink, Switch, Route } from "react-router-dom";
 import Axios from "axios";
 import { useImmer } from "use-immer";
@@ -18,7 +19,8 @@ function Profile() {
       profileAvatar: "https://gravatar.com/avatar/placeholder?s=128",
       isFollowing: false,
       counts: { postCount: "", followerCount: "", followingCount: "" }
-    }
+    },
+    userDoesntExist: false
   });
 
   useEffect(() => {
@@ -26,8 +28,13 @@ function Profile() {
     async function fetchData() {
       try {
         const response = await Axios.post(`/profile/${username}`, { token: appState.user.token }, { cancelToken: ourRequest.token });
+
         setState(draft => {
-          draft.profileData = response.data;
+          if (response.data) {
+            draft.profileData = response.data;
+          } else {
+            draft.userDoesntExist = true;
+          }
         });
       } catch (e) {
         console.log("There was a problem.");
@@ -103,7 +110,9 @@ function Profile() {
       draft.stopFollowingRequestCount++;
     });
   }
-
+  if (state.userDoesntExist) {
+    return <NotFound />;
+  }
   return (
     <Page title="Profile Screen">
       <h2>
