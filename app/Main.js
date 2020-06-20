@@ -51,7 +51,7 @@ function Main() {
         draft.loggedIn = false;
         break;
       case "flashMessage":
-        draft.flashMessages.push(action.value);
+        draft.flashMessages.push({ message: action.value, color: action.color });
         break;
       case "openSearch":
         draft.isSearchOpen = true;
